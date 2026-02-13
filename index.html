@@ -16,86 +16,46 @@
             --page-margin-bottom: calc(2rem + env(safe-area-inset-bottom));
         }
 
-        /* CUSTOM SCROLLBAR LOGIC */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-main);
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-main); }
 
-        /* Generic reset */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden; 
-            overflow-y: auto;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow-x: hidden; overflow-y: auto;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
             background-attachment: fixed;
             color: var(--text-main);
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); /* Firefox */
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
         }
 
-        #app {
-            position: relative;
-            width: 100%;
-            min-height: 100dvh;
-            z-index: 5; /* Ensure content is definitely on top */
-        }
+        #app { position: relative; width: 100%; min-height: 100dvh; z-index: 5; }
 
         #bg-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            /* Narrow the background slightly to stay clear of the scrollbar gutter */
-            width: calc(100% - 8px); 
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden; 
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: calc(100% - 8px); z-index: 1;
+            pointer-events: none; overflow: hidden; 
         }
 
         .page {
-            display: none;
-            flex-direction: column;
-            align-items: center;
+            display: none; flex-direction: column; align-items: center;
             padding: 2rem 2rem var(--page-margin-bottom) 2rem;
-            text-align: center;
-            min-height: 100dvh;
+            text-align: center; min-height: 100dvh;
         }
 
-        .page.active {
-            display: flex;
-        }
-
+        .page.active { display: flex; }
         #intro { justify-content: center; }
-
         .spacer { flex-grow: 1; }
 
         .envelope-wrapper {
             font-size: clamp(5rem, 15vw, 8rem);
-            cursor: pointer;
-            animation: pulse 2s infinite ease-in-out;
-            will-change: transform;
-            display: inline-block;
-            margin-top: auto;
+            cursor: pointer; animation: pulse 2s infinite ease-in-out;
+            will-change: transform; display: inline-block; margin-top: auto;
         }
 
         @keyframes pulse {
@@ -103,65 +63,44 @@
             50% { transform: scale(1.08); }
         }
 
-        .intro-text {
-            font-size: clamp(1.2rem, 5vw, 1.8rem);
-            font-weight: 600;
-            margin-bottom: auto;
-            padding-top: 2rem;
-        }
-
-        .hint-text, .footer-hint {
-            font-size: 0.6rem;
-            font-weight: 600;
-            opacity: 0.7;
-            letter-spacing: 0.05rem;
-            text-transform: uppercase;
-            margin-top: 2rem;
-        }
+        .intro-text { font-size: clamp(1.2rem, 5vw, 1.8rem); font-weight: 600; margin-bottom: auto; padding-top: 2rem; }
+        .hint-text, .footer-hint { font-size: 0.6rem; font-weight: 600; opacity: 0.7; letter-spacing: 0.05rem; text-transform: uppercase; margin-top: 2rem; }
 
         #main { padding-top: 10dvh; }
+        .main-heart { font-size: clamp(4rem, 12vw, 6rem); cursor: pointer; margin-bottom: 1.5rem; display: inline-block; }
+        h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); margin: 0 0 1.5rem 0; font-weight: 600; }
 
-        .main-heart {
-            font-size: clamp(4rem, 12vw, 6rem);
-            cursor: pointer;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            will-change: transform, opacity;
-        }
-
-        h1 {
-            font-size: clamp(1.8rem, 8vw, 2.5rem);
-            margin: 0 0 1.5rem 0;
-            font-weight: 600;
+        /* Typography Container */
+        .quote-container {
+            width: 100%;
+            max-width: 320px; /* Constrains width to make the alignment obvious */
+            margin: 0 auto;
         }
 
         .poem {
-            max-width: 600px;
             line-height: 1.6;
-            font-size: clamp(1rem, 4vw, 1.2rem);
-            font-style: italic;
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            text-align: left;
+            font-style: normal;
+            /* Hanging Punctuation Logic */
+            hanging-punctuation: first; 
+            text-indent: -0.5em; 
         }
 
-        .stagger-item {
-            opacity: 0;
-            transform: translateY(30px);
-            will-change: transform, opacity;
+        .poem p { margin: 0.2rem 0; }
+
+        .attribution {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: right; /* Right aligned as requested */
+            width: 100%;
         }
 
-        .stagger-item.animate {
-            transition: opacity 1s var(--easing), transform 1s var(--easing);
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
+        .stagger-item { opacity: 0; transform: translateY(30px); will-change: transform, opacity; }
+        .stagger-item.animate { transition: opacity 1s var(--easing), transform 1s var(--easing); opacity: 1; transform: translateY(0); }
         .footer-hint.animate { opacity: 0.7; }
-
-        .particle {
-            position: absolute;
-            pointer-events: none;
-            will-change: transform, opacity;
-            z-index: 1;
-        }
+        .particle { position: absolute; pointer-events: none; will-change: transform, opacity; z-index: 1; }
     </style>
 </head>
 <body>
@@ -180,12 +119,20 @@
         <section id="main" class="page">
             <div class="main-heart stagger-item" id="bigHeart">❤️</div>
             <h1 class="stagger-item">Happy Valentine’s Day</h1>
-            <div class="poem">
-                <p class="stagger-item">"Doubt thou the stars are fire;</p>
-                <p class="stagger-item">Doubt that the sun doth move;</p>
-                <p class="stagger-item">Doubt truth to be a liar;</p>
-                <p class="stagger-item">But never doubt I love."</p>
+            
+            <div class="quote-container">
+                <div class="poem">
+                    <p class="stagger-item">Doubt thou the stars are fire;</p>
+                    <p class="stagger-item">Doubt that the sun doth move;</p>
+                    <p class="stagger-item">Doubt truth to be a liar;</p>
+                    <p class="stagger-item">But never doubt I love.</p>
+                </div>
+                
+                <div class="attribution stagger-item">
+                    —William Shakespeare, <i>Hamlet</i>
+                </div>
             </div>
+
             <div class="spacer"></div>
             <div class="footer-hint stagger-item">2019–Always & Forever</div>
         </section>
@@ -199,7 +146,7 @@
                 try {
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
                     this.unlocked = true;
-                } catch(e) { console.error("Audio not supported"); }
+                } catch(e) {}
             },
             play(type) {
                 if (!this.unlocked || !this.ctx) return;
@@ -266,7 +213,6 @@
                     const el = document.createElement('div');
                     el.className = 'particle';
                     el.textContent = this.burstEmojis[Math.floor(Math.random() * this.burstEmojis.length)];
-                    // Use window.innerWidth to ensure we don't spawn under the scrollbar area
                     el.style.left = Math.random() * (window.innerWidth - 10) + 'px';
                     el.style.top = '-20px';
                     el.style.fontSize = (Math.random() * 0.8 + 0.5) + 'rem';
