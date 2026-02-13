@@ -13,22 +13,30 @@
             --scrollbar-thumb: #f48fb1;
             --transition-speed: 800ms;
             --easing: cubic-bezier(0.4, 0, 0.2, 1);
-            /* This ensures the absolute bottom distance is identical for both pages */
             --page-margin-bottom: calc(2rem + env(safe-area-inset-bottom));
         }
+
+        /* RESTORED CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-main); }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden;
+            overflow-x: hidden; 
+            overflow-y: auto; /* ENABLED SCROLLING */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
             background-attachment: fixed;
             color: var(--text-main);
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
         }
 
-        #app { position: relative; width: 100%; height: 100dvh; z-index: 5; }
+        #app { position: relative; width: 100%; min-height: 100dvh; z-index: 5; }
 
         #bg-layer {
             position: fixed; top: 0; left: 0; bottom: 0;
@@ -39,11 +47,11 @@
         .page {
             display: none; flex-direction: column; align-items: center;
             padding: 2rem 2rem var(--page-margin-bottom) 2rem;
-            text-align: center; height: 100dvh;
+            text-align: center; 
+            min-height: 100dvh; /* Allows expansion if content overflows */
         }
 
         .page.active { display: flex; }
-        
         .spacer { flex-grow: 1; }
 
         .envelope-wrapper {
@@ -62,20 +70,18 @@
             opacity: 0.7; 
             letter-spacing: 0.05rem; 
             text-transform: uppercase;
-            margin: 0; 
         }
 
         #main { padding-top: 8dvh; }
         .main-heart { font-size: clamp(4rem, 12vw, 6rem); cursor: pointer; margin-bottom: 1rem; display: inline-block; }
         h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); margin: 0; font-weight: 600; }
 
-        /* EQUAL SPACING LOGIC */
+        /* EQUAL SPACING LOGIC WITH OVERFLOW PROTECTION */
         .quote-container { 
             width: 100%; 
             max-width: 320px; 
-            /* This 'margin: auto 0' creates the equal space above and below the poem */
-            margin: auto 0; 
-            padding: 2rem 0;
+            margin: auto 0; /* Creates equal gaps top and bottom */
+            padding: 3rem 0; /* Ensures there is ALWAYS a minimum gap */
         }
 
         .poem { line-height: 1.6; font-size: clamp(1.1rem, 4vw, 1.3rem); text-align: left; text-indent: -0.5em; }
@@ -84,7 +90,7 @@
 
         .stagger-item { opacity: 0; transform: translateY(30px); will-change: transform, opacity; }
         .stagger-item.animate { transition: opacity 1s var(--easing), transform 1s var(--easing); opacity: 1; transform: translateY(0); }
-        .footer-hint.animate { opacity: 0.7; }
+        .footer-hint { margin-top: 1rem; }
         .particle { position: absolute; pointer-events: none; z-index: 1; }
     </style>
 </head>
