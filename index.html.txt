@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>For Zawa 💌</title>
+    <style>
+        :root {
+            --bg-start: #ffd6e8;
+            --bg-end: #ffc2dd;
+            --text-main: #d04b7e;
+            --scrollbar-track: #ffdeeb;
+            --scrollbar-thumb: #f48fb1;
+            --transition-speed: 800ms;
+            --easing: cubic-bezier(0.4, 0, 0.2, 1);
+            --page-margin-bottom: calc(2rem + env(safe-area-inset-bottom));
+        }
+
+        /* CUSTOM SCROLLBAR LOGIC */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-main);
+        }
+
+        /* Generic reset */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; 
+            overflow-y: auto;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            background-attachment: fixed;
+            color: var(--text-main);
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); /* Firefox */
+        }
+
+        #app {
+            position: relative;
+            width: 100%;
+            min-height: 100dvh;
+            z-index: 5; /* Ensure content is definitely on top */
+        }
+
+        #bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            /* Narrow the background slightly to stay clear of the scrollbar gutter */
+            width: calc(100% - 8px); 
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden; 
+        }
+
+        .page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 2rem var(--page-margin-bottom) 2rem;
+            text-align: center;
+            min-height: 100dvh;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        #intro { justify-content: center; }
+
+        .spacer { flex-grow: 1; }
+
+        .envelope-wrapper {
+            font-size: clamp(5rem, 15vw, 8rem);
+            cursor: pointer;
+            animation: pulse 2s infinite ease-in-out;
+            will-change: transform;
+            display: inline-block;
+            margin-top: auto;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .intro-text {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            font-weight: 600;
+            margin-bottom: auto;
+            padding-top: 2rem;
+        }
+
+        .hint-text, .footer-hint {
+            font-size: 0.6rem;
+            font-weight: 600;
+            opacity: 0.7;
+            letter-spacing: 0.05rem;
+            text-transform: uppercase;
+            margin-top: 2rem;
+        }
+
+        #main { padding-top: 10dvh; }
+
+        .main-heart {
+            font-size: clamp(4rem, 12vw, 6rem);
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            will-change: transform, opacity;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
+            margin: 0 0 1.5rem 0;
+            font-weight: 600;
+        }
+
+        .poem {
+            max-width: 600px;
+            line-height: 1.6;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            font-style: italic;
+        }
+
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            will-change: transform, opacity;
+        }
+
+        .stagger-item.animate {
+            transition: opacity 1s var(--easing), transform 1s var(--easing);
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer-hint.animate { opacity: 0.7; }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            will-change: transform, opacity;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-layer"></div>
+
+    <div id="app">
+        <section id="intro" class="page active">
+            <div class="spacer"></div>
+            <div class="envelope-wrapper" id="envelope">💌</div>
+            <div class="intro-text">Hello, Zawa! This is for you.</div>
+            <div class="spacer"></div>
+            <div class="hint-text" id="hint">TAP TO OPEN</div>
+        </section>
+
+        <section id="main" class="page">
+            <div class="main-heart stagger-item" id="bigHeart">❤️</div>
+            <h1 class="stagger-item">Happy Valentine’s Day</h1>
+            <div class="poem">
+                <p class="stagger-item">"Doubt thou the stars are fire;</p>
+                <p class="stagger-item">Doubt that the sun doth move;</p>
+                <p class="stagger-item">Doubt truth to be a liar;</p>
+                <p class="stagger-item">But never doubt I love."</p>
+            </div>
+            <div class="spacer"></div>
+            <div class="footer-hint stagger-item">2019–Always & Forever</div>
+        </section>
+    </div>
+
+    <script>
+        const AudioCtrl = {
+            ctx: null, unlocked: false,
+            async init() {
+                if (this.ctx) return;
+                try {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    this.unlocked = true;
+                } catch(e) { console.error("Audio not supported"); }
+            },
+            play(type) {
+                if (!this.unlocked || !this.ctx) return;
+                if (this.ctx.state === "suspended") this.ctx.resume();
+                const now = this.ctx.currentTime;
+                if (type === 'special') {
+                    const frequencies = [220.00, 277.18, 329.63, 415.30]; 
+                    frequencies.forEach((f, i) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = "sine";
+                        osc.frequency.setValueAtTime(f, now);
+                        const start = now + (i * 0.08); 
+                        gain.gain.setValueAtTime(0.0001, start);
+                        gain.gain.exponentialRampToValueAtTime(0.08, start + 0.4);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.2);
+                        osc.connect(gain); gain.connect(this.ctx.destination);
+                        osc.start(start); osc.stop(start + 1.3);
+                    });
+                } else {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(450 + Math.random() * 300, now);
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(now + 0.06);
+                }
+            }
+        };
+
+        const Engine = {
+            container: document.getElementById('bg-layer'),
+            burstEmojis: ['💘','💝','💖','💗','💓','💞','💕','❣️','❤️‍🔥','❤️','🩷','🧡','💛','💚','💙','🩵','💜','🤍','🫶', '🌸', '🌹', '🌷', '🌼', '🍃', '🌿'],
+            active: true,
+            init() {
+                document.addEventListener('visibilitychange', () => this.active = !document.hidden);
+                this.startSnowfall();
+            },
+            spawn(x, y, isBurst = false) {
+                const count = isBurst ? 28 : Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'particle';
+                    el.textContent = this.burstEmojis[Math.floor(Math.random() * this.burstEmojis.length)];
+                    el.style.fontSize = isBurst ? `${Math.random() * 1.5 + 0.5}rem` : `${Math.random() * 0.5 + 0.5}rem`;
+                    const angle = isBurst ? (Math.PI * 2 * i) / count : Math.PI * Math.random();
+                    const velocity = isBurst ? 100 + Math.random() * 150 : 20 + Math.random() * 40;
+                    this.container.appendChild(el);
+                    const anim = el.animate([
+                        { transform: 'translate(-50%, -50%) translate(0,0) scale(0)', opacity: 1 },
+                        { transform: `translate(-50%, -50%) translate(${Math.cos(angle)*velocity}px, ${isBurst ? Math.sin(angle)*velocity : velocity+20}px) scale(1)`, opacity: 0 }
+                    ], { duration: isBurst ? 1000 : 1200, easing: 'cubic-bezier(0, .9, .57, 1)' });
+                    el.style.left = `${x}px`; el.style.top = `${y}px`;
+                    anim.onfinish = () => el.remove();
+                }
+            },
+            startSnowfall() {
+                const spawnFall = () => {
+                    if (!this.active || !document.getElementById('main').classList.contains('active')) {
+                        requestAnimationFrame(() => setTimeout(spawnFall, 500)); return;
+                    }
+                    const el = document.createElement('div');
+                    el.className = 'particle';
+                    el.textContent = this.burstEmojis[Math.floor(Math.random() * this.burstEmojis.length)];
+                    // Use window.innerWidth to ensure we don't spawn under the scrollbar area
+                    el.style.left = Math.random() * (window.innerWidth - 10) + 'px';
+                    el.style.top = '-20px';
+                    el.style.fontSize = (Math.random() * 0.8 + 0.5) + 'rem';
+                    el.style.opacity = Math.random() * 0.5 + 0.3;
+                    this.container.appendChild(el);
+                    const anim = el.animate([
+                        { transform: `translate(0, 0) rotate(0deg)` },
+                        { transform: `translate(${(Math.random()-0.5)*80}px, 110dvh) rotate(${Math.random()*360}deg)` }
+                    ], { duration: 7000 + Math.random()*5000, easing: 'linear' });
+                    anim.onfinish = () => el.remove();
+                    setTimeout(spawnFall, 600);
+                };
+                spawnFall();
+            }
+        };
+
+        const App = {
+            isTransitioning: false,
+            init() {
+                const isTouch = 'ontouchstart' in window;
+                document.getElementById('hint').textContent = isTouch ? 'TAP TO OPEN' : 'CLICK TO OPEN';
+                document.addEventListener('pointerdown', (e) => {
+                    if (this.isTransitioning) return;
+                    if (!AudioCtrl.unlocked) AudioCtrl.init();
+                    Engine.spawn(e.clientX, e.clientY);
+                    AudioCtrl.play('tap');
+                });
+                document.getElementById('envelope').addEventListener('pointerdown', (e) => {
+                    e.stopPropagation(); this.openValentine(e);
+                });
+                document.getElementById('bigHeart').addEventListener('pointerdown', (e) => {
+                    e.stopPropagation(); this.triggerBurst(e);
+                });
+                Engine.init();
+            },
+            triggerBurst(e) {
+                const rect = e.target.getBoundingClientRect();
+                Engine.spawn(rect.left + rect.width/2, rect.top + rect.height/2, true);
+                AudioCtrl.play('special');
+            },
+            async openValentine(e) {
+                if (this.isTransitioning) return;
+                this.isTransitioning = true;
+                this.triggerBurst(e);
+                await new Promise(r => setTimeout(r, 800));
+                document.getElementById('intro').classList.remove('active');
+                const main = document.getElementById('main');
+                main.classList.add('active');
+                main.querySelectorAll('.stagger-item').forEach((item, i) => {
+                    setTimeout(() => item.classList.add('animate'), 100 + (i * 180));
+                });
+                setTimeout(() => this.isTransitioning = false, 1000);
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
+</body>
+</html>
